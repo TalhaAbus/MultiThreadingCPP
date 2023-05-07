@@ -128,5 +128,44 @@ int main()
 
 - We fixed it temporarily but the general problem is what happens when multiple threads work on shared data and we're going to have to get into things like mutexes to fix that problem.
 
+## Mutex
+
+```CPP
+#include <iostream>
+#include <thread>
+#include <atomic>
+#include <chrono>
+#include <mutex>
+
+using namespace std;
+
+int main()
+{
+    int count = 0;
+    const int ITERATIONS = 1E6;
+
+    mutex mtx;
+
+    auto func = [&]() {
+        for (int i = 0; i < ITERATIONS; i++)
+        {
+            mtx.lock();
+            ++count;
+            mtx.unlock();
+        }
+    };
+
+    thread t1(func);
+    thread t2(func);
+
+    t1.join();
+    t2.join();
+
+    cout << count << endl;
+
+    return 0;
+}
+```
+- What is going on here? The mutex here stops more than one thread at a time from accessing this variable between lock and unclok here. (++count). Any code that's in here we call a critical sention. The point about critical section is that only one thread can access it at a time. So only one thread can lock the mutex at a given time, if another thread tries to lock the mutex when it is already locked, second thread will just wait until the mutex is unlcoked and then the second thread will be able to lock the mutex.
 
 
