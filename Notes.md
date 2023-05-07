@@ -168,4 +168,42 @@ int main()
 ```
 - What is going on here? The mutex here stops more than one thread at a time from accessing this variable between lock and unclok here. (++count). Any code that's in here we call a critical sention. The point about critical section is that only one thread can access it at a time. So only one thread can lock the mutex at a given time, if another thread tries to lock the mutex when it is already locked, second thread will just wait until the mutex is unlcoked and then the second thread will be able to lock the mutex.
 
+=================================
+**What happens if the code in critical section throws and exception?**
+- Then the mutex never get unclocked. So for that reason, it's more common to use **unique lock** or **lock guards**. 
+
+## Lock Guards
+- Using mutex this diretcly is not ideal because you could get and exception thrown in the critical section and then it will never unlock. So for that rason we prefer use our RAII (Resource Acquisition is Initialization) idiom. 
+- Idea is that if you want to acquire some resource, so in this case, we want to acquire a lock, you do it by initializing some variable. And then if that variable should go out of scope for any reason, even if an exception is thrown, then it will release the resource or it can be made to do that. So we are going to use lockguard instead of mutex. And to do that, we just declare here a **lock_guard** (this is actually a template type and you have to see what kind of mutex you are expected to wrap or to work with) 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
