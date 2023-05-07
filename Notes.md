@@ -176,13 +176,49 @@ int main()
 - Using mutex this diretcly is not ideal because you could get and exception thrown in the critical section and then it will never unlock. So for that rason we prefer use our RAII (Resource Acquisition is Initialization) idiom. 
 - Idea is that if you want to acquire some resource, so in this case, we want to acquire a lock, you do it by initializing some variable. And then if that variable should go out of scope for any reason, even if an exception is thrown, then it will release the resource or it can be made to do that. So we are going to use lockguard instead of mutex. And to do that, we just declare here a **lock_guard** (this is actually a template type and you have to see what kind of mutex you are expected to wrap or to work with) 
 
+```CPP
+#include <iostream>
+#include <thread>
+#include <atomic>
+#include <chrono>
+#include <mutex>
 
+using namespace std;
 
+void work(int& count, mutex& mtx)
+{
+    for (int i = 0; i < 1E6; i++)
+    {
+        lock_guard<mutex> guard(mtx);
+        ++count;
+    }
+}
 
+int main()
+{
+    int count = 0;
 
+    mutex mtx;
 
+    thread t1(work, ref(count), ref(mtx));
+    thread t2(work, ref(count), ref(mtx));
 
+    t1.join();
+    t2.join();
 
+    cout << count << endl;
+
+    return 0;
+}
+```
+- Here when you declare a lock_guard and you pass a mutex to it, it will actually acquire the lock if it can, otherwise it is going to wait until it can acquire the lock. So basically it is the same as doing calling lock on a mutex. When it goes out of scope, this is a different thing. It will release the lock. 
+
+```CPP
+++count;
+```
+> So this code can't run until the lock is acquired on the mutex. 
+
+**What is the difference if we use **unique_lock**?**
 
 
 
