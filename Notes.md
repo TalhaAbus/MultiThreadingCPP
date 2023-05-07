@@ -218,7 +218,6 @@ int main()
 ```
 > So this code can't run until the lock is acquired on the mutex. 
 
-**What is the difference if we use **unique_lock**?**
 
 
 
