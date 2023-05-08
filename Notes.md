@@ -218,9 +218,26 @@ int main()
 ```
 > So this code can't run until the lock is acquired on the mutex. 
 
+**A situation where one thread has to wait for another thread before it can proceed**
+```CPP
+#include <iostream>
+#include <thread>
+#include <chrono>
 
+using namespace std;
 
+int main()
+{
+	bool ready = false;
 
+	thread t1([&]() {
+		this_thread::sleep_for(chrono::milliseconds(2000));
+		ready = true;
+	});
+	t1.join();
+}
+```
+- In this code, i wanted to know when "ready" becomes true, which happens after 2 seconds. But you can imagine that this thread might be doing something more complicated. We don't know when this variable is going to become true. 
 
 
 
